@@ -11,7 +11,7 @@ type ToDoRpstr interface {
 
 /*ToDoSrvc define Bahavior of ToDo Services */
 type ToDoSrvc interface {
-	New(userID uint, title string) domain.ToDo
-	UpdateByID() (domain.ToDo, error)
+	Note(userID uint, title string) domain.ToDo
+	UpdateByID(id uint, title string, completed bool) (domain.ToDo, error)
 	DeleteByID(id uint) error
 }
