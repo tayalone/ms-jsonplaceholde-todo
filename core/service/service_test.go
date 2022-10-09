@@ -22,6 +22,7 @@ var mockRepo = &mockTodoRepo{}
 func (m *mockTodoRepo) Create(payload dto.NoteTodo) domain.ToDo {
 	return domain.ToDo{
 		ID:        1,
+		UserID:    payload.UserID,
 		Title:     payload.Title,
 		Completed: false,
 		CreatedAt: createdAt,
@@ -32,6 +33,7 @@ func (m *mockTodoRepo) Create(payload dto.NoteTodo) domain.ToDo {
 func (m *mockTodoRepo) UpdateByPk(payload dto.UpdateTodo) (domain.ToDo, error) {
 	return domain.ToDo{
 		ID:        1,
+		UserID:    1,
 		Title:     *payload.Title,
 		Completed: *payload.Completed,
 		CreatedAt: createdAt,
@@ -84,6 +86,26 @@ func TestService_Note(t *testing.T) {
 		want   domain.ToDo
 	}{
 		// TODO: Add test cases.
+		{
+			name: "Case 1: Create New Todo Item",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				note: dto.NoteTodo{
+					UserID: 1,
+					Title:  "Lorem Ipsum",
+				},
+			},
+			want: domain.ToDo{
+				ID:        1,
+				UserID:    1,
+				Title:     "Lorem Ipsum",
+				Completed: false,
+				CreatedAt: createdAt,
+				UpdateAt:  updatedAt,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
