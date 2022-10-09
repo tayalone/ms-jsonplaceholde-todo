@@ -32,14 +32,44 @@ func (m *mockTodoRepo) Create(payload dto.NoteTodo) domain.ToDo {
 }
 
 func (m *mockTodoRepo) UpdateByPk(payload dto.UpdateTodo) (domain.ToDo, error) {
-	return domain.ToDo{
-		ID:        1,
-		UserID:    1,
-		Title:     *payload.Title,
-		Completed: *payload.Completed,
-		CreatedAt: createdAt,
-		UpdateAt:  updatedAt,
-	}, nil
+	if payload.ID == 112 {
+		return domain.ToDo{}, errors.New("Todo Does not exist")
+	}
+
+	if payload.Title != nil && payload.Completed != nil {
+		return domain.ToDo{
+			ID:        1,
+			UserID:    1,
+			Title:     *payload.Title,
+			Completed: *payload.Completed,
+			CreatedAt: createdAt,
+			UpdateAt:  updatedAt,
+		}, nil
+	}
+
+	if payload.Title != nil {
+		return domain.ToDo{
+			ID:        1,
+			UserID:    1,
+			Title:     *payload.Title,
+			Completed: false,
+			CreatedAt: createdAt,
+			UpdateAt:  updatedAt,
+		}, nil
+	}
+
+	if payload.Completed != nil {
+		return domain.ToDo{
+			ID:        1,
+			UserID:    1,
+			Title:     "title not change",
+			Completed: *payload.Completed,
+			CreatedAt: createdAt,
+			UpdateAt:  updatedAt,
+		}, nil
+	}
+
+	return domain.ToDo{}, errors.New("Something went wrong")
 }
 
 func (m *mockTodoRepo) DeleteByPk(payload dto.DeleteTodo) error {
@@ -125,6 +155,9 @@ func TestService_Note(t *testing.T) {
 }
 
 func TestService_UpdateByID(t *testing.T) {
+	titleBody := "I wanna Change Todo Title"
+	completedBody := true
+
 	type fields struct {
 		todoRpstr port.ToDoRpstr
 	}
@@ -139,6 +172,102 @@ func TestService_UpdateByID(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "Case 1: Change Both Title & Completed",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				update: dto.UpdateTodo{
+					ID:        1,
+					Title:     &titleBody,
+					Completed: &completedBody,
+				},
+			},
+			want: domain.ToDo{
+				ID:        1,
+				UserID:    1,
+				Title:     titleBody,
+				Completed: completedBody,
+				CreatedAt: createdAt,
+				UpdateAt:  updatedAt,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Case 2: Change Only Title",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				update: dto.UpdateTodo{
+					ID:        1,
+					Title:     &titleBody,
+					Completed: nil,
+				},
+			},
+			want: domain.ToDo{
+				ID:        1,
+				UserID:    1,
+				Title:     titleBody,
+				Completed: false,
+				CreatedAt: createdAt,
+				UpdateAt:  updatedAt,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Case 3: Change Only Completed",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				update: dto.UpdateTodo{
+					ID:        1,
+					Title:     nil,
+					Completed: &completedBody,
+				},
+			},
+			want: domain.ToDo{
+				ID:        1,
+				UserID:    1,
+				Title:     "title not change",
+				Completed: completedBody,
+				CreatedAt: createdAt,
+				UpdateAt:  updatedAt,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Case 4: Todo Does not exist",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				update: dto.UpdateTodo{
+					ID:        112,
+					Title:     &titleBody,
+					Completed: &completedBody,
+				},
+			},
+			want:    domain.ToDo{},
+			wantErr: true,
+		},
+		{
+			name: "Case 5: Payload are not contain Title & Complete",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				update: dto.UpdateTodo{
+					ID:        1,
+					Title:     nil,
+					Completed: nil,
+				},
+			},
+			want:    domain.ToDo{},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
