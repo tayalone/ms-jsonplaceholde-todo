@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -42,6 +43,10 @@ func (m *mockTodoRepo) UpdateByPk(payload dto.UpdateTodo) (domain.ToDo, error) {
 }
 
 func (m *mockTodoRepo) DeleteByPk(payload dto.DeleteTodo) error {
+	if payload.ID == 112 {
+		return errors.New("todo doesn't existing")
+	}
+
 	return nil
 }
 
@@ -166,6 +171,30 @@ func TestService_DeleteByID(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "Case 1: Delete Exising Todo",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				del: dto.DeleteTodo{
+					ID: 1,
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Case 2: Delete Does not Exising Todo",
+			fields: fields{
+				todoRpstr: mockRepo,
+			},
+			args: args{
+				del: dto.DeleteTodo{
+					ID: 112,
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
