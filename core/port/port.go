@@ -1,17 +1,20 @@
 package port
 
-import "github.com/tayalone/ms-jsonplaceholde-todo/core/domain"
+import (
+	"github.com/tayalone/ms-jsonplaceholde-todo/core/domain"
+	"github.com/tayalone/ms-jsonplaceholde-todo/core/dto"
+)
 
 /*ToDoRpstr define Bahavior of ToDo Repository */
 type ToDoRpstr interface {
-	Create(userID uint, title string) domain.ToDo
-	UpdateByPk(id uint, title string, completed bool) (domain.ToDo, error)
-	DeleteByPk(id uint) error
+	Create(dto.NoteTodo) domain.ToDo
+	UpdateByPk(dto.UpdateTodo) (domain.ToDo, error)
+	DeleteByPk(dto.DeleteTodo) error
 }
 
 /*ToDoSrvc define Bahavior of ToDo Services */
 type ToDoSrvc interface {
-	Note(userID uint, title string) domain.ToDo
-	UpdateByID(id uint, title string, completed bool) (domain.ToDo, error)
-	DeleteByID(id uint) error
+	Note(dto.NoteTodo) domain.ToDo
+	UpdateByID(dto.UpdateTodo) (domain.ToDo, error)
+	DeleteByID(dto.DeleteTodo) error
 }

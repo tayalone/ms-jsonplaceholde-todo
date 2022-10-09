@@ -1,7 +1,10 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/tayalone/ms-jsonplaceholde-todo/core/domain"
+	"github.com/tayalone/ms-jsonplaceholde-todo/core/dto"
 	"github.com/tayalone/ms-jsonplaceholde-todo/core/port"
 )
 
@@ -21,13 +24,16 @@ func New(todoRpstr port.ToDoRpstr) *Service {
 }
 
 /*Note do note somedata to database*/
-func (s *Service) Note(userID uint, title string) domain.ToDo {
-	return s.todoRpstr.Create(userID, title)
+func (s *Service) Note(note dto.NoteTodo) domain.ToDo {
+	return s.todoRpstr.Create(note)
 }
 
 /*UpdateByID update Todo data with Id*/
-func (s *Service) UpdateByID(id uint, title string, completed bool) (domain.ToDo, error) {
-	updatedTodo, err := s.todoRpstr.UpdateByPk(id, title, completed)
+func (s *Service) UpdateByID(update dto.UpdateTodo) (domain.ToDo, error) {
+	if update.Title == nil && update.Completed == nil {
+		return domain.ToDo{}, errors.New("title and completed do not nil @ the sametime")
+	}
+	updatedTodo, err := s.todoRpstr.UpdateByPk(update)
 	if err != nil {
 		return domain.ToDo{}, err
 	}
@@ -35,10 +41,10 @@ func (s *Service) UpdateByID(id uint, title string, completed bool) (domain.ToDo
 }
 
 /*DeleteByID do Deleted By Id*/
-func (s *Service) DeleteByID(id uint, title string, completed bool) (domain.ToDo, error) {
-	updatedTodo, err := s.todoRpstr.UpdateByPk(id, title, completed)
+func (s *Service) DeleteByID(del dto.DeleteTodo) error {
+	err := s.todoRpstr.DeleteByPk(del)
 	if err != nil {
-		return domain.ToDo{}, err
+		return err
 	}
-	return updatedTodo, nil
+	return nil
 }
