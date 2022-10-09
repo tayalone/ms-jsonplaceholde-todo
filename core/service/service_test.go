@@ -53,6 +53,13 @@ func TestNew(t *testing.T) {
 		want *Service
 	}{
 		// TODO: Add test cases.
+		{
+			name: "Case 1: Create New Services",
+			args: args{
+				todoRpstr: mockRepo,
+			},
+			want: New(mockRepo),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
