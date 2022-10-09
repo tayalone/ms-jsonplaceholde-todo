@@ -7,14 +7,14 @@ import (
 
 /*ToDoRpstr define Bahavior of ToDo Repository */
 type ToDoRpstr interface {
-	Create(dto.NoteTodo) domain.ToDo
-	UpdateByPk(dto.UpdateTodo) (domain.ToDo, error)
-	DeleteByPk(dto.DeleteTodo) error
+	Create(payload dto.NoteTodo) domain.ToDo
+	UpdateByPk(payload dto.UpdateTodo) (domain.ToDo, error)
+	DeleteByPk(payload dto.DeleteTodo) error
 }
 
 /*ToDoSrvc define Bahavior of ToDo Services */
 type ToDoSrvc interface {
-	Note(dto.NoteTodo) domain.ToDo
-	UpdateByID(dto.UpdateTodo) (domain.ToDo, error)
-	DeleteByID(dto.DeleteTodo) error
+	Note(note dto.NoteTodo) domain.ToDo
+	UpdateByID(update dto.UpdateTodo) (domain.ToDo, error)
+	DeleteByID(del dto.DeleteTodo) error
 }
